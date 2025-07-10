@@ -1,0 +1,150 @@
+@import '../../variables';
+
+.sign {
+  width: 400px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 21px;
+  padding: 48px 32px;
+  margin-bottom: 26px;
+
+  &--article {
+    width: 940px;
+  }
+
+  &__title {
+    @include font-md;
+
+    font-weight: 500;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  &__label {
+    @include font-base;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__label--checkbox {
+    flex-direction: row;
+    width: 320px;
+    gap: 10px;
+    cursor: pointer;
+    color: #595959;
+    position: relative;
+    top: 20px;
+  }
+
+  &__label--invalid {
+    color: $highlight-color;
+  }
+
+  &__input {
+    @include font-base;
+
+    width: 320px;
+    height: 40px;
+    border-radius: 4px;
+    border: 1px solid #d9d9d9;
+    padding: 8px 12px;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+  }
+
+  &__input--invalid {
+    border-color: $highlight-color;
+    outline-color: $highlight-color;
+  }
+
+  &__input--tall {
+    min-height: 170px;
+    resize: none;
+  }
+
+  &__input--short {
+    width: 300px;
+  }
+
+  &__input--checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+
+  &__inputs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  &__tag {
+    display: flex;
+    gap: 10px;
+  }
+
+  &__tag-delete {
+    border: 1px solid $highlight-color;
+    color: $highlight-color;
+    border-radius: 4px;
+    width: 120px;
+  }
+
+  &__tag-delete--hidden {
+    display: none;
+  }
+
+  &__tag-add {
+    border: 1px solid $info-color;
+    color: $info-color;
+    border-radius: 4px;
+    width: 120px;
+  }
+
+  &__tag-add--hidden {
+    display: none;
+  }
+
+  &__submit {
+    background-color: $info-color;
+    color: #fff;
+    height: 40px;
+    border-radius: 4px;
+    margin-top: 20px;
+  }
+
+  &__submit--article {
+    width: 320px;
+  }
+
+  &__submit--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &__other-option {
+    color: #8c8c8c;
+  }
+
+  &__marked {
+    color: $info-color;
+  }
+
+  &__sign-up-text {
+    color: $success-color;
+  }
+
+  &__error {
+    color: $highlight-color;
+  }
+}

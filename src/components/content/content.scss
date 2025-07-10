@@ -1,0 +1,12 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  max-width: 940px;
+  margin: 0 auto;
+
+  &__pagination {
+    margin-bottom: 24px;
+  }
+}

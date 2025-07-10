@@ -1,0 +1,76 @@
+@import '../../../variables';
+
+.article {
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+  padding: 8px 16px 16px 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  box-sizing: border-box;
+  width: 940px;
+
+  &__header {
+    display: flex;
+    gap: 32px;
+  }
+
+  &__tags {
+    display: flex;
+    gap: 4px;
+    max-width: 719px;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    height: 25px;
+  }
+
+  &__tags--empty {
+    height: 0;
+    margin-top: -8px;
+  }
+
+  &__tag {
+    border: 1px solid $text-color;
+    color: $text-color;
+    padding: 0 4px;
+    border-radius: 3px;
+    display: block;
+    height: 20px;
+    white-space: nowrap;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__description {
+    color: $text-color;
+  }
+
+  &__account {
+    display: flex;
+    flex-shrink: 0;
+    gap: 12px;
+    width: 157px;
+    justify-content: space-between;
+  }
+
+  &__avatar {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 100px;
+  }
+
+  &__account-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__time {
+    color: $text-color-secondary;
+  }
+}

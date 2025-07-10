@@ -1,0 +1,74 @@
+@import '../../variables';
+
+.header {
+  background-color: #fff;
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 22px;
+  color: $heading-color;
+  margin-bottom: 26px;
+
+  &__account {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  &__sign-in {
+    background-color: transparent;
+    border: 0;
+    padding: 8px 20px;
+    color: $heading-color;
+  }
+
+  &__sign-up {
+    background-color: transparent;
+    border: 1px solid $success-color;
+    border-radius: 5px;
+    padding: 8px 20px;
+    color: $success-color;
+  }
+
+  &__sign-up-text {
+    color: $success-color;
+  }
+
+  &__avatar {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 100px;
+  }
+
+  &__name {
+    text-decoration: none;
+    color: $heading-color;
+  }
+
+  &__article {
+    padding: 6px;
+    border: 1px solid $success-color;
+    color: $success-color;
+    border-radius: 5px;
+  }
+
+  &__log-out {
+    padding: 8px 20px;
+    border-radius: 5px;
+    border: 1px solid $heading-color;
+    color: $heading-color;
+  }
+
+  &__title:visited {
+    color: $heading-color;
+  }
+
+  &__profile {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: $heading-color;
+  }
+}

@@ -1,0 +1,60 @@
+@import '../../variables';
+
+.article {
+  &--one-post {
+    flex-direction: column;
+    margin-bottom: 26px;
+  }
+
+  &__author {
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+  }
+
+  &__account--one-post {
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  &__header--one-post {
+    justify-content: space-between;
+  }
+
+  &__manage {
+    display: flex;
+    gap: 12px;
+  }
+
+  &__delete {
+    border: 1px solid $highlight-color;
+    color: $highlight-color;
+    border-radius: 5px;
+    height: 32px;
+    width: 80px;
+  }
+
+  &__edit {
+    border: 1px solid $success-color;
+    color: $success-color;
+    border-radius: 5px;
+    height: 32px;
+    width: 65px;
+  }
+
+  &__tooltip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: $heading-color;
+    gap: 8px;
+  }
+
+  &__tooltip-button {
+    @include font-md;
+    width: 100%;
+    background-color: $highlight-color;
+    color: #fff;
+    border-radius: 3px;
+  }
+}

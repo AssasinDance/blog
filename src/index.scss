@@ -1,0 +1,39 @@
+@font-face {
+  font-family: 'Inter';
+  src: url('./src/assets/fonts/Inter-VariableFont_opsz\,wght.ttf');
+}
+
+body {
+  background-color: #ebeef3;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  line-height: 22px;
+  font-family: 'Inter', sans-serif;
+}
+
+button {
+  cursor: pointer;
+  background-color: transparent;
+  border: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 28px;
+  margin: 0;
+}
+
+h5 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+  margin: 0;
+}
