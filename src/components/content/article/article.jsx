@@ -1,32 +1,10 @@
 import './article.scss'
-import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 
 import Avatar from './avatar/avatar'
 import Title from './title/title'
 
 export default function Article({ user, article }) {
-  const [isLoading, setIsLoading] = useState(true)
-  const [isError, setIsError] = useState(false)
-
-  async function fetchImage(url) {
-    fetch(url, {
-      mode: 'no-cors',
-    })
-      .then((data) => {
-        setIsLoading(false)
-        return data
-      })
-      .catch(() => {
-        setIsLoading(false)
-        setIsError(true)
-      })
-  }
-
-  useEffect(() => {
-    fetchImage(article.author.image)
-  }, [article])
-
   return (
     <article className="content__article article">
       <div className="article__info">
@@ -54,7 +32,7 @@ export default function Article({ user, article }) {
           </h6>
           <span className="article__time">{format(article.createdAt, 'MMMM d, yyyy')}</span>
         </div>
-        <Avatar isLoading={isLoading} isError={isError} article={article} />
+        <Avatar article={article} />
       </div>
     </article>
   )
