@@ -104,7 +104,7 @@ export const blogApi = createApi({
           : [{ type: 'Users', id: 'LIST' }],
     }),
     registerUser: builder.mutation({
-      query: (username, email, password) => ({
+      query: ({ username, email, password }) => ({
         url: 'users',
         method: 'POST',
         body: {

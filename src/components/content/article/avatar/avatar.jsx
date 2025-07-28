@@ -12,7 +12,6 @@ export default function Avatar({ article }) {
     })
       .then((data) => {
         setIsLoading(false)
-        console.log(data)
         return data
       })
       .catch(() => {
