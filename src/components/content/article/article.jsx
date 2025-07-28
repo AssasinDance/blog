@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 import Avatar from './avatar/avatar'
 import Title from './title/title'
 
-export default function Article({ article }) {
+export default function Article({ user, article }) {
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
 
@@ -30,7 +30,7 @@ export default function Article({ article }) {
   return (
     <article className="content__article article">
       <div className="article__info">
-        <Title article={article} />
+        <Title article={article} user={user} />
         <div className={article.tagList.length ? 'article__tags' : 'article__tags article__tags--empty'}>
           {article.tagList.map((tag, index) => {
             return (
@@ -50,9 +50,7 @@ export default function Article({ article }) {
       <div className="article__account">
         <div className="article__account-info">
           <h6 className="article__name">
-            {article.author.username.length > 10
-              ? `${article.author.username.slice(0, 9)}...`
-              : article.author.username}
+            {article.author.username.length > 9 ? `${article.author.username.slice(0, 8)}...` : article.author.username}
           </h6>
           <span className="article__time">{format(article.createdAt, 'MMMM d, yyyy')}</span>
         </div>

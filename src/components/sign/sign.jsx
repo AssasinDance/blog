@@ -4,15 +4,22 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useEffect, useState, useRef } from 'react'
 
-import { registerUser, loginUser, editUser, createArticle, editArticle } from './fetch/fetch'
+import {
+  useLoginUserMutation,
+  useRegisterUserMutation,
+  useEditUserMutation,
+  useCreateArticleMutation,
+  useEditArticleMutation,
+  useGetArticleQuery,
+} from '../../services/api'
 
 export function SignIn({ user, setUser }) {
+  const [loginUser, { isLoading }] = useLoginUserMutation()
   const {
     register,
     formState: { errors },
     handleSubmit,
     setError,
-    reset,
   } = useForm()
 
   const navigate = useNavigate()
@@ -21,28 +28,30 @@ export function SignIn({ user, setUser }) {
     if (user) navigate('/')
   }, [navigate, user])
 
-  const onSubmit = (data) => {
-    const { email, password } = data
-
-    loginUser(email, password).then((response) => {
-      if (Object.hasOwn(response, 'errors')) {
-        setError('email', { type: 'server', message: 'Email or password is invalid' })
-        setError('password', { type: 'server', message: 'Email or password is invalid' })
-      }
-
-      if (Object.hasOwn(response, 'user')) {
-        reset()
+  const handleLoginUser = async (email, password) => {
+    await loginUser({ email, password })
+      .unwrap()
+      .then((response) => {
         setUser(response.user)
         localStorage.setItem('token', response.user.token)
         navigate('/')
-      }
-    })
+      })
+      .catch(() => {
+        setError('email', { type: 'server', message: 'Email or password is invalid' })
+        setError('password', { type: 'server', message: 'Email or password is invalid' })
+      })
+  }
+
+  const onSubmit = (formData) => {
+    const { email, password } = formData
+
+    handleLoginUser(email, password)
   }
 
   return (
     <div className="content__sign sign">
       <span className="sign__title">Sign In</span>
-      <form className="sign__form" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form className="sign__form" onSubmit={!isLoading ? handleSubmit(onSubmit) : undefined} noValidate>
         <label className="sign__label" htmlFor="email">
           Email address
           <input
@@ -89,11 +98,11 @@ export function SignIn({ user, setUser }) {
 }
 
 export function SignUp({ user, setUser }) {
+  const [registerUser, { isLoading }] = useRegisterUserMutation()
   const {
     register,
     formState: { errors },
     handleSubmit,
-    reset,
     watch,
     setError,
   } = useForm()
@@ -103,25 +112,30 @@ export function SignUp({ user, setUser }) {
     if (user) navigate('/')
   }, [navigate, user])
 
-  const onSubmit = (data) => {
-    const { username, email, password } = data
-
-    registerUser(username, email, password).then((response) => {
-      if (Object.hasOwn(response, 'errors')) {
-        if (Object.hasOwn(response.errors, 'email')) setError('email', { type: 'server', message: 'Is already taken' })
-      }
-      if (Object.hasOwn(response, 'errors')) {
-        if (Object.hasOwn(response.errors, 'username'))
-          setError('username', { type: 'server', message: 'Is already taken' })
-      }
-
-      if (Object.hasOwn(response, 'user')) {
-        reset()
+  const handleRegisterUser = async (username, email, password) => {
+    await registerUser({ username, email, password })
+      .unwrap()
+      .then((response) => {
         setUser(response.user)
         localStorage.setItem('token', response.user.token)
         navigate('/')
-      }
-    })
+      })
+      .catch((response) => {
+        if (Object.hasOwn(response, 'errors')) {
+          if (Object.hasOwn(response.errors, 'email'))
+            setError('email', { type: 'server', message: 'Is already taken' })
+        }
+        if (Object.hasOwn(response, 'errors')) {
+          if (Object.hasOwn(response.errors, 'username'))
+            setError('username', { type: 'server', message: 'Is already taken' })
+        }
+      })
+  }
+
+  const onSubmit = (data) => {
+    const { username, email, password } = data
+
+    handleRegisterUser(username, email, password)
   }
 
   const passwordValue = watch('password')
@@ -129,7 +143,11 @@ export function SignUp({ user, setUser }) {
   return (
     <div className="content__sign sign">
       <span className="sign__title">Sign Up</span>
-      <form className="sign__form" onSubmit={handleSubmit((data) => onSubmit(data))} noValidate>
+      <form
+        className="sign__form"
+        onSubmit={!isLoading ? handleSubmit((data) => onSubmit(data)) : undefined}
+        noValidate
+      >
         <label className="sign__label" htmlFor="username">
           Username
           <input
@@ -243,6 +261,7 @@ export function SignUp({ user, setUser }) {
 
 export function EditProfile({ user, setUser }) {
   const navigate = useNavigate()
+  const [editUser, { isLoading }] = useEditUserMutation()
 
   useEffect(() => {
     if (!user) navigate('/sign-in')
@@ -252,8 +271,28 @@ export function EditProfile({ user, setUser }) {
     register,
     formState: { errors },
     handleSubmit,
+    setError,
     reset,
   } = useForm()
+
+  const handleEditUser = async (username, email, password, url) => {
+    await editUser({ username, email, password, url, token: user.token })
+      .unwrap()
+      .then((response) => {
+        if (Object.hasOwn(response, 'user')) setUser(response.user)
+        reset()
+      })
+      .catch((response) => {
+        if (Object.hasOwn(response.data, 'errors')) {
+          if (Object.hasOwn(response.data.errors, 'email'))
+            setError('email', { type: 'server', message: 'Is already taken' })
+        }
+        if (Object.hasOwn(response.data, 'errors')) {
+          if (Object.hasOwn(response.data.errors, 'username'))
+            setError('username', { type: 'server', message: 'Is already taken' })
+        }
+      })
+  }
 
   const onSubmit = (body) => {
     let { username, email, password, url } = body
@@ -263,16 +302,18 @@ export function EditProfile({ user, setUser }) {
     if (!password) password = null
     if (!url) url = user.image || null
 
-    editUser(username, email, password, url, user.token).then((data) => {
-      if (Object.hasOwn(data, 'user')) setUser(data.user)
-    })
-    reset()
+    handleEditUser(username, email, password, url, user.token)
   }
 
   return (
     <div className="content__sign sign">
       <span className="sign__title">Edit Profile</span>
-      <form className="sign__form" onSubmit={handleSubmit((data) => onSubmit(data))} noValidate autoComplete="off">
+      <form
+        className="sign__form"
+        onSubmit={!isLoading ? handleSubmit((data) => onSubmit(data)) : undefined}
+        noValidate
+        autoComplete="off"
+      >
         <label className="sign__label" htmlFor="username">
           Username
           <input
@@ -344,14 +385,22 @@ export function EditProfile({ user, setUser }) {
 }
 
 export function NewArticle({ user }) {
+  const [createArticle, { isLoading }] = useCreateArticleMutation()
   const {
     register,
     unregister,
     formState: { errors },
     handleSubmit,
-    reset,
   } = useForm()
   const navigate = useNavigate()
+
+  const handleCreateArticle = async (article) => {
+    await createArticle({ article, token: user.token })
+      .unwrap()
+      .then((response) => {
+        navigate(`/articles/${response.article.slug}`)
+      })
+  }
 
   const onSubmit = (data) => {
     const { title, description, body, ...tagsObject } = data
@@ -359,8 +408,7 @@ export function NewArticle({ user }) {
     const tags = Object.values(tagsObject).filter((tag) => tag)
 
     article.tagList = tags
-    createArticle(article, user.token).then((response) => navigate(`/articles/${response.article.slug}`))
-    reset()
+    handleCreateArticle(article)
   }
 
   const [tagsList, setTagsList] = useState([{ value: '', id: 0 }])
@@ -373,7 +421,10 @@ export function NewArticle({ user }) {
   return (
     <div className="content__sign sign sign--article">
       <span className="sign__title">Create new article</span>
-      <form className="sign__form sign__form--article" onSubmit={handleSubmit((data) => onSubmit(data))}>
+      <form
+        className="sign__form sign__form--article"
+        onSubmit={!isLoading ? handleSubmit((data) => onSubmit(data)) : undefined}
+      >
         <label className="sign__label" htmlFor="title">
           Title
           <input
@@ -471,48 +522,55 @@ export function NewArticle({ user }) {
 }
 
 export function EditArticle({ user }) {
+  const [editArticle, { isLoading }] = useEditArticleMutation()
   const {
     register,
     unregister,
     formState: { errors },
     handleSubmit,
-    reset,
   } = useForm()
   const navigate = useNavigate()
   const { id } = useParams()
+  const { data } = useGetArticleQuery({ slug: id, token: user.token })
   const [article, setArticle] = useState(null)
   const [tagsList, setTagsList] = useState([{ value: '', id: 0 }])
   const tagsCounter = useRef(0)
 
-  const onSubmit = (data) => {
-    const { title, description, body, ...tagsObject } = data
+  const handleEditArticle = async (post) => {
+    await editArticle({ article: post, slug: id, token: user.token })
+      .unwrap()
+      .then((response) => {
+        navigate(`/articles/${response.article.slug}`)
+      })
+  }
+
+  const onSubmit = (formData) => {
+    const { title, description, body, ...tagsObject } = formData
     const post = { title, description, body }
     const tags = Object.values(tagsObject).filter((tag) => tag)
     post.tagList = tags
 
-    editArticle(post, id, user.token).then((response) => {
-      navigate(`/articles/${response.article.slug}`)
-    })
-    reset()
+    handleEditArticle(post)
   }
 
   useEffect(() => {
     if (!user) navigate('/sign-in')
-    fetch(`https://blog-platform.kata.academy/api/articles/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setArticle(data.article)
+  }, [navigate, user])
 
-        if (data.article.tagList) {
-          const tagListObject = []
-          data.article.tagList.forEach((tag, index) => {
-            tagListObject.push({ value: tag, id: index })
-            tagsCounter.current += 1
-          })
-          setTagsList(tagListObject)
-        }
-      })
-  }, [navigate, user, id])
+  useEffect(() => {
+    if (data) {
+      setArticle(data.article)
+
+      if (data.article.tagList.length !== 0) {
+        const tagListObject = []
+        data.article.tagList.forEach((tag, index) => {
+          tagListObject.push({ value: tag, id: index })
+          tagsCounter.current += 1
+        })
+        setTagsList(tagListObject)
+      }
+    }
+  }, [data])
 
   if (!article)
     return (
@@ -539,7 +597,10 @@ export function EditArticle({ user }) {
   return (
     <div className="content__sign sign sign--article">
       <span className="sign__title">Edit article</span>
-      <form className="sign__form sign__form--article" onSubmit={handleSubmit((data) => onSubmit(data))}>
+      <form
+        className="sign__form sign__form--article"
+        onSubmit={!isLoading ? handleSubmit((formData) => onSubmit(formData)) : undefined}
+      >
         <label className="sign__label" htmlFor="title">
           Title
           <input

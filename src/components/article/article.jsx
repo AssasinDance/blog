@@ -6,11 +6,14 @@ import { Tooltip } from 'antd'
 import Markdown from 'markdown-to-jsx'
 
 import Avatar from '../content/article/avatar/avatar'
+import { useDeleteArticleMutation, useGetArticleQuery } from '../../services/api'
 
 import Title from './title/title'
 
 export default function Article({ user }) {
+  const [deleteArticle, { isLoading: isDeleteLoading }] = useDeleteArticleMutation()
   const { id } = useParams()
+  const { data } = useGetArticleQuery({ slug: id, token: user !== null ? user.token : user })
   const [article, setArticle] = useState(null)
 
   const [isLoading, setIsLoading] = useState(true)
@@ -21,9 +24,9 @@ export default function Article({ user }) {
     fetch(url, {
       mode: 'no-cors',
     })
-      .then((data) => {
+      .then((response) => {
         setIsLoading(false)
-        return data
+        return response
       })
       .catch(() => {
         setIsLoading(false)
@@ -31,28 +34,34 @@ export default function Article({ user }) {
       })
   }
 
-  function deleteArticle() {
-    const url = `https://blog-platform.kata.academy/api/articles/${article.slug}`
-    const options = {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Token ${user.token}`,
-      },
-    }
-    return fetch(url, options).then(() => {
-      navigate('/')
-    })
+  const handleDeleteArticle = async () => {
+    await deleteArticle({ slug: article.slug, token: user.token })
+      .unwrap()
+      .then(() => {
+        navigate('/')
+      })
   }
 
+  // function deleteArticle() {
+  //   const url = `https://blog-platform.kata.academy/api/articles/${article.slug}`
+  //   const options = {
+  //     method: 'DELETE',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: `Token ${user.token}`,
+  //     },
+  //   }
+  //   return fetch(url, options).then(() => {
+  //     navigate('/')
+  //   })
+  // }
+
   useEffect(() => {
-    fetch(`https://blog-platform.kata.academy/api/articles/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setArticle(data.article)
-        fetchImage(data.article.author.image)
-      })
-  }, [id, user])
+    if (data) {
+      setArticle(data.article)
+      fetchImage(data.article.author.image)
+    }
+  }, [data])
 
   if (article === null) {
     return (
@@ -82,7 +91,7 @@ export default function Article({ user }) {
       <article className="article article--one-post">
         <div className="article__header article__header--one-post">
           <div className="article__info">
-            <Title article={article} />
+            <Title article={article} user={user} />
             <div className={article.tagList.length ? 'article__tags' : 'article__tags article__tags--empty'}>
               {article.tagList.map((tag, index) => {
                 return (
@@ -111,7 +120,11 @@ export default function Article({ user }) {
                   title={
                     <div className="article__tooltip">
                       <span className="article__tooltip-text">Are you sure?</span>
-                      <button className="article__tooltip-button" type="button" onClick={() => deleteArticle()}>
+                      <button
+                        className="article__tooltip-button"
+                        type="button"
+                        onClick={() => (!isDeleteLoading ? handleDeleteArticle() : undefined)}
+                      >
                         DELETE!
                       </button>
                     </div>

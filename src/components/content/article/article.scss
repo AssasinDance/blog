@@ -48,6 +48,7 @@
 
   &__description {
     color: $text-color;
+    overflow-wrap: anywhere;
   }
 
   &__account {
@@ -72,5 +73,9 @@
 
   &__time {
     color: $text-color-secondary;
+  }
+
+  &__main-text {
+    overflow-wrap: anywhere;
   }
 }

@@ -12,12 +12,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.8.2",
     "antd": "^5.26.3",
     "date-fns": "^4.1.0",
     "markdown-to-jsx": "^7.7.10",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.59.0",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.6.2"
   },
   "devDependencies": {

@@ -11,36 +11,31 @@ import SignUp from './pages/SignUp'
 import Profile from './pages/Profile'
 import NewPost from './pages/NewPost'
 import EditPost from './pages/EditPost'
+import { useGetUserQuery } from './services/api'
 
 function App() {
+  const token = localStorage.getItem('token')
+  const { data, isError } = useGetUserQuery(token)
   const [user, setUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
+    if (data && token) {
+      setIsLoading(false)
+      setUser(data.user)
+    }
 
-    if (token) {
-      const url = 'https://blog-platform.kata.academy/api/user'
-      const options = {
-        headers: {
-          Authorization: `Token ${token}`,
-        },
-      }
-
-      fetch(url, options)
-        .then((response) => response.json())
-        .then((data) => {
-          setIsLoading(false)
-          setUser(data.user)
-        })
-    } else setIsLoading(false)
-  }, [])
+    if (isError) {
+      setIsLoading(false)
+    }
+  }, [data, isError, token])
 
   if (!isLoading)
     return (
       <Routes>
         <Route path="/" element={<Header user={user} setUser={setUser} />}>
-          <Route index element={<Postslist user={user} />} />
+          <Route index element={<Postslist currentPage={currentPage} setCurrentPage={setCurrentPage} user={user} />} />
           <Route path="articles" element={<Navigate to="/" replace />} />
           <Route path="articles/:id" element={<Post user={user} />} />
           <Route path="sign-in" element={<SignIn user={user} setUser={setUser} />} />
